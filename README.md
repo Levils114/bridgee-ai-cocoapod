@@ -3,7 +3,6 @@
 [![Swift Package Manager](https://img.shields.io/badge/SPM-compatible-brightgreen.svg)](https://swift.org/package-manager/)
 [![iOS](https://img.shields.io/badge/iOS-14.0%2B-blue.svg)](https://developer.apple.com/ios/)
 [![Swift](https://img.shields.io/badge/Swift-5.5%2B-orange.svg)](https://swift.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## 📖 Visão Geral
 
@@ -38,6 +37,20 @@ dependencies: [
     .package(url: "https://github.com/bridgee-ai/bridgee-ios-sdk.git", from: "1.0.0")
 ]
 ```
+
+---
+
+## 📱 Exemplo de Uso
+
+Para ver uma implementação completa e funcional do Bridgee iOS SDK, confira nosso **repositório de exemplo**:
+
+🔗 **[Bridgee iOS Example App](https://github.com/bridgee-ai/bridgee-ios-example)**
+
+O exemplo inclui:
+- Configuração completa do SDK com Firebase Analytics
+- Interface de usuário para testar diferentes cenários
+- Implementação de boas práticas
+- Casos de uso reais de atribuição
 
 ---
 
@@ -352,22 +365,10 @@ Console.app → Filtrar por "BRIDGEE-SDK"
 
 ## 🔗 Links Úteis
 
-- 📖 [Documentação Completa](https://docs.bridgee.ai)
 - 🐛 [Reportar Issues](https://github.com/bridgee-ai/bridgee-ios-sdk/issues)
 - 💬 [Suporte Técnico](mailto:support@bridgee.ai)
 - 📱 [Exemplo de Implementação](https://github.com/bridgee-ai/bridgee-ios-example)
 
----
-
-## 📄 Licença
-
-Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
-
----
-
-## 🤝 Contribuição
-
-Contribuições são bem-vindas! Por favor, leia nosso [Guia de Contribuição](CONTRIBUTING.md) antes de submeter pull requests.
 
 ---
 
