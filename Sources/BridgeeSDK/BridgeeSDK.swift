@@ -1,7 +1,8 @@
 import Foundation
 
 /// Estrutura para retornar os dados UTM obtidos da API
-public struct UTMData {
+@objc
+public class UTMData:NSObject {
     public let utm_source: String
     public let utm_medium: String
     public let utm_campaign: String
