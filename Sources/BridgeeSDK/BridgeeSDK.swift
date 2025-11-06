@@ -39,6 +39,7 @@ public final class BridgeeSDK {
     ///   - tenantId: Seu ID de tenant fornecido pela Bridgee.
     ///   - tenantKey: Sua chave de tenant fornecida pela Bridgee.
     ///   - dryRun: Se true, o SDK registrará no console em vez de enviar eventos.
+    @objc
     public func configure(
         provider: AnalyticsProvider,
         tenantId: String,
@@ -66,6 +67,7 @@ public final class BridgeeSDK {
     /// - Parameters:
     ///   - matchBundle: O pacote de dados do usuário.
     ///   - completion: Callback com UTMData ou nil em caso de erro
+    @objc
     public func firstOpen(with matchBundle: MatchBundle, completion: @escaping (UTMData?) -> Void) {
         print("\(logPrefix) firstOpen iniciado (iOS 14.0+ compatible).")
         
