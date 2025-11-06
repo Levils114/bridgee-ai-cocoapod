@@ -16,11 +16,11 @@ public class UTMData:NSObject {
 
 /// A classe principal e ponto de entrada para o BridgeeSDK.
 @available(iOS 14.0, *)
-public final class BridgeeSDK {
+@objc
+public final class BridgeeSDK: NSObject {
 
     // 1. Implementação do Singleton
     public static let shared = BridgeeSDK()
-    private init() {} // Construtor privado para forçar o singleton
 
     // 2. Propriedades Internas
     private var provider: AnalyticsProvider?
