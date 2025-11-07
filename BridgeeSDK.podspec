@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'BridgeeSDK'
-  s.version          = '1.0.3'
+  s.version          = '1.0.4'
   s.summary          = 'SDK de atribuição completo para conectar campanhas de marketing com instalações iOS'
   
   s.description      = <<-DESC
@@ -19,7 +19,6 @@ Pod::Spec.new do |s|
   s.swift_version = '5.5'
 
   s.source_files = 'Sources/BridgeeSDK/**/*.{swift,h,m}'
-  s.resources = 'Sources/BridgeeSDK/Resources/**/*'
   
   # Frameworks necessários
   s.frameworks = 'Foundation', 'UIKit'

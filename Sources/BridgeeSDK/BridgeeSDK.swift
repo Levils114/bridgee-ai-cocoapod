@@ -1,10 +1,13 @@
 import Foundation
 
 /// Estrutura para retornar os dados UTM obtidos da API
-@objc
+@objcMembers
 public class UTMData:NSObject {
+    @objc
     public let utm_source: String
+    @objc
     public let utm_medium: String
+    @objc
     public let utm_campaign: String
     
     public init(utm_source: String, utm_medium: String, utm_campaign: String) {
@@ -20,6 +23,7 @@ public class UTMData:NSObject {
 public final class BridgeeSDK: NSObject {
 
     // 1. Implementação do Singleton
+    @objc
     public static let shared = BridgeeSDK()
 
     // 2. Propriedades Internas
@@ -55,11 +59,7 @@ public final class BridgeeSDK: NSObject {
         let tokenString = "\(tenantId);\(tenantKey)"
         if let tokenData = tokenString.data(using: .utf8) {
             self.tenantToken = tokenData.base64EncodedString()
-        } else {
-            print("\(logPrefix) ERRO: Falha ao codificar o tenant-token. O SDK não funcionará.")
         }
-        
-        print("\(logPrefix) BridgeeSDK configurado. Modo DryRun: \(dryRun)")
     }
 
     // 4. Método Público: firstOpen (compatível com iOS 14.0+)
@@ -69,33 +69,27 @@ public final class BridgeeSDK: NSObject {
     ///   - matchBundle: O pacote de dados do usuário.
     ///   - completion: Callback com UTMData ou nil em caso de erro
     @objc
-    public func firstOpen(with matchBundle: MatchBundle, completion: @escaping (UTMData?) -> Void) {
-        print("\(logPrefix) firstOpen iniciado (iOS 14.0+ compatible).")
-        
+    public func firstOpen(with matchBundle: MatchBundle, completion: @escaping ((UTMData?, String?) -> Void)) {
         // Verificações de configuração
         guard let tenantId = self.tenantId else {
-            print("\(logPrefix) ERRO: SDK não configurado. Chame BridgeeSDK.shared.configure() primeiro.")
-            completion(nil)
+            completion(nil, "Erro sem tenantId")
             return
         }
         
         guard let tenantToken = self.tenantToken else {
-            print("\(logPrefix) ERRO: Tenant Token é inválido ou nulo. Verifique tenantId e tenantKey.")
-            completion(nil)
+            completion(nil, "Erro sem tenantToken")
             return
         }
         
         // Fazer chamada à API usando completion handler
         performMatchRequest(bundle: matchBundle, token: tenantToken) { [weak self] result in
             guard let self = self else {
-                completion(nil)
+                completion(nil, "Erro sem self")
                 return
             }
             
             switch result {
             case .success(let response):
-                print("\(self.logPrefix) API de Match retornou com sucesso.")
-                
                 // Criar objeto UTMData para retorno
                 let utmData = UTMData(
                     utm_source: response.utm_source,
@@ -105,21 +99,13 @@ public final class BridgeeSDK: NSObject {
                 
                 // Verificação de dryRun - agora após obter dados da API
                 if self.dryRun {
-                    print("\(self.logPrefix) [DRY RUN] SDK em modo dry run. Eventos e atributos não serão enviados.")
-                    print("\(self.logPrefix) [DRY RUN] MatchBundle recebido: \(String(describing: matchBundle))")
-                    print("\(self.logPrefix) [DRY RUN] Dados UTM obtidos da API:")
-                    print("\(self.logPrefix) [DRY RUN]   - utm_source: \(response.utm_source)")
-                    print("\(self.logPrefix) [DRY RUN]   - utm_medium: \(response.utm_medium)")
-                    print("\(self.logPrefix) [DRY RUN]   - utm_campaign: \(response.utm_campaign)")
-                    print("\(self.logPrefix) [DRY RUN] Eventos que seriam enviados para: \(tenantId)")
-                    completion(utmData)
+                    completion(utmData, nil)
                     return
                 }
                 
                 // Verificar se provider está disponível (apenas necessário quando não é dry run)
                 guard let provider = self.provider else {
-                    print("\(self.logPrefix) ERRO: Provider não configurado. Chame BridgeeSDK.shared.configure() primeiro.")
-                    completion(utmData) // Retorna os dados mesmo sem provider
+                    completion(utmData, nil) // Retorna os dados mesmo sem provider
                     return
                 }
                 
@@ -139,21 +125,15 @@ public final class BridgeeSDK: NSObject {
                 provider.logEvent(name: "\(sanitizedTenantId)_campaign_details", parameters: eventParams)
                 provider.logEvent(name: "first_open", parameters: eventParams)
                 provider.logEvent(name: "campaign_details", parameters: eventParams)
-                
-                print("\(self.logPrefix) 4 eventos de atribuição registrados via provider.")
 
                 // Gravar propriedades do usuário
                 provider.setUserProperty(name: "install_source", value: response.utm_source)
                 provider.setUserProperty(name: "install_medium", value: response.utm_medium)
                 provider.setUserProperty(name: "install_campaign", value: response.utm_campaign)
                 
-                print("\(self.logPrefix) 3 propriedades de usuário de instalação registradas via provider.")
-                
-                completion(utmData)
-                
+                completion(utmData, nil)
             case .failure(let error):
-                print("\(self.logPrefix) ERRO: Falha no processo de firstOpen: \(error.localizedDescription)")
-                completion(nil)
+                completion(nil, error.localizedDescription)
             }
         }
     }
@@ -170,8 +150,6 @@ public final class BridgeeSDK: NSObject {
         request.setValue(token, forHTTPHeaderField: "x-tenant-token")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = bundle.asAPIBody()
-        
-        print("\(logPrefix) Iniciando chamada de rede para \(url.absoluteString)")
 
         // Usa URLSession nativo com completion handler (compatível com iOS 14.0+)
         URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
@@ -191,7 +169,6 @@ public final class BridgeeSDK: NSObject {
             }
             
             guard (200...299).contains(httpResponse.statusCode) else {
-                print("\(self.logPrefix) ERRO: Erro do servidor: Status Code \(httpResponse.statusCode)")
                 completion(.failure(APIError.serverError(statusCode: httpResponse.statusCode)))
                 return
             }
@@ -205,7 +182,6 @@ public final class BridgeeSDK: NSObject {
                 let apiResponse = try JSONDecoder().decode(APIResponse.self, from: data)
                 completion(.success(apiResponse))
             } catch {
-                print("\(self.logPrefix) ERRO: Falha ao decodificar resposta JSON: \(error.localizedDescription)")
                 completion(.failure(APIError.decodingError(error)))
             }
         }.resume()
